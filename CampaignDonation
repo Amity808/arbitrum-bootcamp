@@ -40,4 +40,6 @@ contract Donation {
         _donate[_campaignId].owner.transfer(_donate[_campaignId].goalAmount);
         _donate[_campaignId].done = true;
     }
+
+    receive() external payable {}
 }
