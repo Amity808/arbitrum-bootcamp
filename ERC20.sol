@@ -1,18 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.9;
 
-library SafeMath { 
-    function sub(uint256 a, uint256 b) internal pure returns (uint256) {
-      assert(b <= a);
-      return a - b;
-    }
-    
-    function add(uint256 a, uint256 b) internal pure returns (uint256) {
-      uint256 c = a + b;
-      assert(c >= a);
-      return c;
-    }
-}
 
 contract Erc20 {
      uint256 private _totalSupply;
@@ -21,7 +9,6 @@ contract Erc20 {
     string private _tokensymbol;
     uint256 private decimals = 18;
 
-    using SafeMath for uint256;
 
     mapping(address => uint256) public  balances;
     mapping(address => mapping (address => uint256)) public allowances;
@@ -53,8 +40,8 @@ contract Erc20 {
     function transfer(address _spender, uint256 tokenAmount) public returns (bool) {
         require(_spender != address(0), "Invalid address");
         require(tokenAmount <= balances[msg.sender], "Insufficient balance");
-        balances[msg.sender] = balances[msg.sender].sub(tokenAmount);
-        balances[_spender] = balances[_spender].add(tokenAmount);
+        balances[msg.sender] -= tokenAmount;
+        balances[_spender] += tokenAmount;
         
         emit TransferToken(msg.sender, _spender, tokenAmount);
         return true;
@@ -71,9 +58,9 @@ contract Erc20 {
         require(tokenAmount <= balances[_ownerAddress], "Insufficient Amount");    
         require(tokenAmount <= allowances[_ownerAddress][msg.sender], "Insucfficient allowance");
     
-        balances[_ownerAddress] = balances[_ownerAddress].sub(tokenAmount);
-        allowances[_ownerAddress][msg.sender] = allowances[_ownerAddress][msg.sender].sub(tokenAmount);
-        balances[_reciever] = balances[_reciever].add(tokenAmount);
+        balances[_ownerAddress] -= tokenAmount;
+        allowances[_ownerAddress][msg.sender] -= tokenAmount;
+        balances[_reciever] += tokenAmount;
 
 
         emit TransferTokenFrom(_ownerAddress, _reciever, tokenAmount);
