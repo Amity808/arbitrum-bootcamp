@@ -1,0 +1,43 @@
+// SPDX-License-Identifier: MIT
+pragma solidity 0.8.9;
+
+contract Donation {
+    // 
+
+    uint256 donationLength;
+
+    struct Donate {
+        address payable owner;
+        string description;
+        uint256 goalAmount;
+        uint256 amuontRaised;
+        bool done;
+    }
+
+    mapping (uint256 => Donate) public _donate;
+
+    modifier onlyCampaignOwner(uint256 _campaignId) {
+    require(msg.sender == _donate[_campaignId].owner, "Only the campaign owner can call this function");
+    _;
+    }
+
+    function createCamapign(string memory _description, uint256 _goalAmount) public {
+        uint256 amountRaise = 0;
+        _donate[donationLength] = Donate(payable (msg.sender), _description, _goalAmount, amountRaise, false);
+
+    }
+
+    function donateToCampaign(uint256 _campaignId) public payable {
+        require(msg.value > 0, "value must me greater zero");
+        require(_donate[_campaignId].amuontRaised < _donate[_campaignId].goalAmount, "Kindly find another campagin to donate");
+        Donate storage donate = _donate[_campaignId];
+        donate.amuontRaised += msg.value; 
+    }
+
+    function withdraw(uint256 _campaignId) public payable onlyCampaignOwner(_campaignId) {
+        require(_donate[_campaignId].goalAmount >= _donate[_campaignId].amuontRaised, "You are yet to reach your goal");
+        require(_donate[_campaignId].goalAmount <= address(this).balance, "Insufficient funds");
+        _donate[_campaignId].owner.transfer(_donate[_campaignId].goalAmount);
+        _donate[_campaignId].done = true;
+    }
+}
