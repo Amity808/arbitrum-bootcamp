@@ -11,7 +11,7 @@ contract NFTMarketplaceV1 is ERC721URIStorage {
     Counters.Counter private _tokenId; // tokenId
     Counters.Counter  private _soldItems; // total items
     address payable owner;
-    mapping (uint256 => NFTMarketplace) nfts;
+    mapping (uint256 => NFTMarketplace) public nfts;
 
     // nft struct
      struct NFTMarketplace {
